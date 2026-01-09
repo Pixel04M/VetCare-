@@ -47,16 +47,6 @@ A comprehensive mobile application that enables pet owners to register their ani
 - Android SDK 24 or higher
 - Kotlin 2.0.21 or later
 
-### Installation
-
-1. Clone the repository
-2. Open the project in Android Studio
-3. Sync Gradle files
-4. Add your Google Maps API key:
-   - Get an API key from [Google Cloud Console](https://console.cloud.google.com/google/maps-apis)
-   - Uncomment the meta-data tag in `AndroidManifest.xml`
-   - Replace `YOUROOGLEMAPSAPIKEY` with your actual API key
-
 ### Running the App
 
 1. Connect an Android device or start an emulator
