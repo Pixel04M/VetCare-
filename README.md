@@ -6,7 +6,7 @@ A comprehensive mobile application that enables pet owners to register their ani
 ###  Core Functionality
 
 1. **User Authentication**
-   - User registration and login [<img width="800" height="800" alt="image" src="https://github.com/user-attachments/assets/a02c003e-9aa5-43d3-999e-80e078eedc46" />]
+   - User registration and login 
 
    - Secure user session management
 
