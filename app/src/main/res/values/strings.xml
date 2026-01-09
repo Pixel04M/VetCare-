@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Online Vet Hospital</string>
+    <string name="welcome">Welcome to Online Vet Hospital</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="name">Name</string>
+    <string name="phone">Phone</string>
+    <string name="register_pet">Register Pet</string>
+    <string name="pet_name">Pet Name</string>
+    <string name="breed">Breed</string>
+    <string name="age">Age</string>
+    <string name="medical_history">Medical History</string>
+    <string name="consultations">Consultations</string>
+    <string name="nearby_vets">Nearby Vets</string>
+    <string name="prescriptions">Prescriptions</string>
+    <string name="my_pets">My Pets</string>
+    <string name="start_consultation">Start Consultation</string>
+    <string name="video_call">Video Call</string>
+    <string name="chat">Chat</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_photo">Add Photo</string>
+</resources>

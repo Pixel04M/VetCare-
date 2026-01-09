@@ -1,0 +1,706 @@
+{
+	"info": {
+		"_postman_id": "online-vet-hospital-api",
+		"name": "Online Vet Hospital API",
+		"description": "Complete REST API collection for Online Vet Hospital mobile application",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"token\", jsonData.token);",
+									"    pm.environment.set(\"userId\", jsonData.user.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+1234567890\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"token\", jsonData.token);",
+									"    pm.environment.set(\"userId\", jsonData.user.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"me"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Pets",
+			"item": [
+				{
+					"name": "Get All Pets",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pets",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"pets"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Pet by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pets/:petId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"pets",
+								":petId"
+							]
+						}
+					}
+				},
+				{
+					"name": "Register Pet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"petId\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Buddy\",\n  \"breed\": \"Golden Retriever\",\n  \"age\": 3,\n  \"species\": \"Dog\",\n  \"medicalHistory\": \"No known allergies\",\n  \"photoUri\": null\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pets",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"pets"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Pet",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Buddy\",\n  \"breed\": \"Golden Retriever\",\n  \"age\": 4\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pets/:petId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"pets",
+								":petId"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Pet",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pets/:petId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"pets",
+								":petId"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Consultations",
+			"item": [
+				{
+					"name": "Get All Consultations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/consultations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"consultations"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Consultation by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/consultations/:consultationId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"consultations",
+								":consultationId"
+							]
+						}
+					}
+				},
+				{
+					"name": "Start Consultation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"consultationId\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"petId\": \"{{petId}}\",\n  \"type\": \"CHAT\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/consultations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"consultations"
+							]
+						}
+					}
+				},
+				{
+					"name": "End Consultation",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/consultations/:consultationId/end",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"consultations",
+								":consultationId",
+								"end"
+							]
+						}
+					}
+				},
+				{
+					"name": "Send Chat Message",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"My dog has been coughing for 2 days. What should I do?\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/consultations/:consultationId/messages",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"consultations",
+								":consultationId",
+								"messages"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Messages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/consultations/:consultationId/messages",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"consultations",
+								":consultationId",
+								"messages"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Veterinary Clinics",
+			"item": [
+				{
+					"name": "Find Nearby Clinics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/vets/nearby?latitude=40.7128&longitude=-74.0060",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"vets",
+								"nearby"
+							],
+							"query": [
+								{
+									"key": "latitude",
+									"value": "40.7128"
+								},
+								{
+									"key": "longitude",
+									"value": "-74.0060"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get All Clinics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/vets/clinics",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"vets",
+								"clinics"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Clinic by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/vets/clinics/:clinicId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"vets",
+								"clinic",
+								":clinicId"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Available Veterinarians",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/vets/doctors",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"vets",
+								"doctors"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Prescriptions",
+			"item": [
+				{
+					"name": "Get Prescriptions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/prescriptions?petId={{petId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"prescriptions"
+							],
+							"query": [
+								{
+									"key": "petId",
+									"value": "{{petId}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Prescription by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/prescriptions/:prescriptionId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"prescriptions",
+								":prescriptionId"
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Prescription",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"petId\": \"{{petId}}\",\n  \"medications\": [\n    {\n      \"name\": \"Antibiotic\",\n      \"dosage\": \"500mg\",\n      \"frequency\": \"Twice daily\",\n      \"duration\": \"7 days\"\n    }\n  ],\n  \"instructions\": \"Give with food after meals\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/prescriptions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"prescriptions"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Delivery Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/prescriptions/:prescriptionId/delivery",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"prescriptions",
+								":prescriptionId",
+								"delivery"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/health",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"health"
+					]
+				}
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "petId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "consultationId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
