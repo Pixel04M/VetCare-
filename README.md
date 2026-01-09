@@ -6,9 +6,9 @@ A comprehensive mobile application that enables pet owners to register their ani
 ###  Core Functionality
 
 1. **User Authentication**
-   - User registration and login 
+   - User registration and login ✅
 
-   - Secure user session management
+   - Secure user session management ✅
 
 2. **Pet Registration**
    - Register pets with photos, breed, age, and medical history
