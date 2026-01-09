@@ -1,7 +1,6 @@
 # Online Vet Hospital - Mobile Application
 
-A comprehensive mobile application that enables pet owners to register their animals and access online veterinary consultations. The app allows users to connect with certified veterinary doctors for medical advice and treatment suggestions, and provides GPS-based detection of nearby veterinary clinics.
-
+A comprehensive mobile application that enables pet owners to register their animals and access online veterinary consultations. The app allows users to connect with certified veterinary doctors for medical advice and treatment suggestions
 ## Features
 
 ###  Core Functionality
