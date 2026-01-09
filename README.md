@@ -10,22 +10,22 @@ A comprehensive mobile application that enables pet owners to register their ani
 
    - Secure user session management ✅
 
-2. **Pet Registration**
+2. **Pet Registration** ❌
    - Register pets with photos, breed, age, and medical history
    - Support for multiple pets per user
    - View and manage registered pets
 
-3. **Online Consultations**
+3. **Online Consultations** ❌
    - 24/7 text chat with certified veterinary doctors
    - Video call consultations
    - Consultation history tracking
 
-4. **Digital Prescriptions**
+4. **Digital Prescriptions**❌
    - View prescriptions from consultations
    - Medication details and instructions
    - Order medicines with delivery option
 
-5. **Medical History Storage**
+5. **Medical History Storage**❌
    - Secure local storage using Room database
    - Complete medical records for each pet
 
