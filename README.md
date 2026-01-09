@@ -4,7 +4,7 @@ A comprehensive mobile application that enables pet owners to register their ani
 
 ## Features
 
-### 🐾 Core Functionality
+###  Core Functionality
 
 1. **User Authentication**
    - User registration and login
@@ -20,18 +20,12 @@ A comprehensive mobile application that enables pet owners to register their ani
    - Video call consultations
    - Consultation history tracking
 
-4. **GPS-Based Vet Finder**
-   - Find nearby veterinary clinics using GPS
-   - View clinic details (address, phone, rating)
-   - Emergency clinic identification
-   - Distance calculation
-
-5. **Digital Prescriptions**
+4. **Digital Prescriptions**
    - View prescriptions from consultations
    - Medication details and instructions
    - Order medicines with delivery option
 
-6. **Medical History Storage**
+5. **Medical History Storage**
    - Secure local storage using Room database
    - Complete medical records for each pet
 
@@ -43,8 +37,7 @@ A comprehensive mobile application that enables pet owners to register their ani
 - **Database**: Room Database
 - **Navigation**: Navigation Compose
 - **Maps**: Google Maps Compose
-- **Image Loading**: Coil
-- **Permissions**: Accompanist Permissions
+
 
 ## Setup Instructions
 
@@ -62,7 +55,7 @@ A comprehensive mobile application that enables pet owners to register their ani
 4. Add your Google Maps API key:
    - Get an API key from [Google Cloud Console](https://console.cloud.google.com/google/maps-apis)
    - Uncomment the meta-data tag in `AndroidManifest.xml`
-   - Replace `YOUR_GOOGLE_MAPS_API_KEY` with your actual API key
+   - Replace `YOUROOGLEMAPSAPIKEY` with your actual API key
 
 ### Running the App
 
@@ -72,53 +65,7 @@ A comprehensive mobile application that enables pet owners to register their ani
 
 ## App Structure
 
-```
-app/src/main/java/com/example/myapplication/
-├── data/
-│   ├── User.kt
-│   ├── Pet.kt
-│   ├── Consultation.kt
-│   ├── Prescription.kt
-│   ├── VetClinic.kt
-│   └── database/
-│       ├── PetEntity.kt
-│       ├── ConsultationEntity.kt
-│       ├── PrescriptionEntity.kt
-│       ├── PetDao.kt
-│       ├── ConsultationDao.kt
-│       ├── PrescriptionDao.kt
-│       └── VetHospitalDatabase.kt
-├── viewmodel/
-│   ├── AuthViewModel.kt
-│   ├── PetViewModel.kt
-│   ├── ConsultationViewModel.kt
-│   ├── VetClinicViewModel.kt
-│   └── PrescriptionViewModel.kt
-├── ui/
-│   ├── screens/
-│   │   ├── LoginScreen.kt
-│   │   ├── RegisterScreen.kt
-│   │   ├── HomeScreen.kt
-│   │   ├── PetRegistrationScreen.kt
-│   │   ├── MyPetsScreen.kt
-│   │   ├── ConsultationsScreen.kt
-│   │   ├── NearbyVetsScreen.kt
-│   │   └── PrescriptionsScreen.kt
-│   └── theme/
-│       ├── Color.kt
-│       ├── Theme.kt
-│       └── Type.kt
-├── navigation/
-│   └── NavGraph.kt
-└── MainActivity.kt
-```
 
-## Color Scheme
-
-The app uses a modern veterinary-themed color palette:
-- **Primary**: Turquoise (#2E9B94)
-- **Secondary**: Coral (#E55555)
-- **Tertiary**: Mint (#7FD4B0)
 
 ## Permissions
 
@@ -143,14 +90,8 @@ The app requires the following permissions:
 
 - The current implementation uses mock data for veterinary clinics
 - Authentication is simplified for demo purposes (should be replaced with proper backend authentication)
-- Video calling requires additional integration with services like WebRTC or Twilio
 - Medicine ordering requires integration with pharmacy APIs
 
-## License
-
-This project is created for demonstration purposes.
-
-## Contact
 
 For questions or support, please contact the development team.
 
