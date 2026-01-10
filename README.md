@@ -76,7 +76,6 @@ The app requires the following permissions:
 - Appointment scheduling
 - Vet rating and reviews
 
-## Notes
 
 - The current implementation uses mock data for veterinary clinics
 - Authentication is simplified for demo purposes (should be replaced with proper backend authentication)
