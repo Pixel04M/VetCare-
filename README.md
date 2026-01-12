@@ -65,7 +65,7 @@ The app requires the following permissions:
 - Camera (for pet photos)
 - Storage (for saving images)
 
-## Future Enhancements
+
 
 - Real-time video calling integration
 - Push notifications for consultations
