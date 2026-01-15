@@ -27,8 +27,7 @@ import com.example.myapplication.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(navController: NavController) {
-    val authViewModel: AuthViewModel = viewModel()
+fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
     val context = LocalContext.current
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
     val registrationSuccess by authViewModel.registrationSuccess.collectAsState()

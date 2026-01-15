@@ -1,67 +1,90 @@
 package com.example.myapplication.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.OnlineVetHospitalApplication
 import com.example.myapplication.data.Consultation
 import com.example.myapplication.data.ConsultationStatus
 import com.example.myapplication.data.ConsultationType
-import com.example.myapplication.data.database.ConsultationEntity
+import com.example.myapplication.data.network.ApiService
+import com.example.myapplication.data.network.ConsultationRequest
+import com.example.myapplication.data.network.ConsultationResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.UUID
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-class ConsultationViewModel(application: Application) : AndroidViewModel(application) {
-    private val database = (application as OnlineVetHospitalApplication).database
-    private val consultationDao = database.consultationDao()
-
+class ConsultationViewModel : ViewModel() {
     private val _consultations = MutableStateFlow<List<Consultation>>(emptyList())
     val consultations: StateFlow<List<Consultation>> = _consultations.asStateFlow()
 
+    private val supabaseAnonKey = "sb_publishable_dluFHcAJR-LfwJDNT0FICA_Ni3QGk0s"
+
+    private val client = OkHttpClient.Builder()
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .addHeader("apikey", supabaseAnonKey)
+                .addHeader("Authorization", "Bearer $supabaseAnonKey")
+                .addHeader("Content-Type", "application/json")
+                .build()
+            chain.proceed(request)
+        }
+        .build()
+
+    private val retrofit = Retrofit.Builder()
+        .baseUrl("https://pmllnpycgoaerizzpjzt.supabase.co/")
+        .client(client)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    private val apiService = retrofit.create(ApiService::class.java)
+
     fun loadConsultations(userId: String) {
         viewModelScope.launch {
-            consultationDao.getConsultationsByUserId(userId).collect { entities ->
-                _consultations.value = entities.map { it.toConsultation() }
-            }
+            try {
+                val response = apiService.getConsultations(userId = "eq.$userId")
+                if (response.isSuccessful) {
+                    _consultations.value = response.body()?.map { it.toConsultation() } ?: emptyList()
+                }
+            } catch (e: Exception) {}
         }
     }
 
-    suspend fun startConsultation(
-        userId: String,
-        petId: String,
-        type: ConsultationType
-    ): String {
-        val consultationId = UUID.randomUUID().toString()
-        val entity = ConsultationEntity(
-            id = consultationId,
-            userId = userId,
-            petId = petId,
-            vetId = "vet_001", // Mock vet ID
-            vetName = "Dr. Sarah Johnson",
-            type = type.name,
-            status = ConsultationStatus.ACTIVE.name,
-            startTime = System.currentTimeMillis(),
-            endTime = null,
-            lastMessage = null,
-            lastMessageTime = null
-        )
-        consultationDao.insertConsultation(entity)
-        return consultationId
+    suspend fun startConsultation(userId: String, petId: String, type: ConsultationType): Boolean {
+        return try {
+            val request = ConsultationRequest(
+                userId = userId,
+                petId = petId,
+                type = type.name
+            )
+            val response = apiService.startConsultation(request)
+            if (response.isSuccessful) {
+                loadConsultations(userId)
+                true
+            } else false
+        } catch (e: Exception) { false }
     }
 
-    private fun ConsultationEntity.toConsultation() = Consultation(
-        id = id,
-        userId = userId,
-        petId = petId,
-        vetId = vetId,
-        vetName = vetName,
-        type = ConsultationType.valueOf(type),
-        status = ConsultationStatus.valueOf(status),
-        startTime = startTime,
-        endTime = endTime,
-        messages = emptyList()
-    )
+    private fun ConsultationResponse.toConsultation(): Consultation {
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        val startTime = try { sdf.parse(startedAt)?.time ?: 0L } catch (e: Exception) { 0L }
+        val endTime = try { endedAt?.let { sdf.parse(it)?.time } } catch (e: Exception) { null }
+
+        return Consultation(
+            id = id,
+            userId = userId,
+            petId = petId,
+            vetId = "vet_001",
+            vetName = "Dr. Sarah Johnson",
+            type = ConsultationType.valueOf(type.uppercase()),
+            status = ConsultationStatus.valueOf(status.uppercase()),
+            startTime = startTime,
+            endTime = endTime,
+            messages = emptyList()
+        )
+    }
 }

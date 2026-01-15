@@ -31,7 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -43,18 +42,23 @@ import com.example.myapplication.viewmodel.PetViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyPetsScreen(navController: NavController) {
+fun MyPetsScreen(navController: NavController, authViewModel: AuthViewModel) {
     val context = LocalContext.current
     val petViewModel: PetViewModel = viewModel(
         factory = androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.getInstance(
             context.applicationContext as Application
         )
     )
-    val authViewModel = remember { AuthViewModel() }
-    val currentUser = authViewModel.currentUser.collectAsState()
+    val currentUser by authViewModel.currentUser.collectAsState()
+    val accessToken by authViewModel.accessToken.collectAsState()
 
-    LaunchedEffect(currentUser.value) {
-        currentUser.value?.let { petViewModel.loadPets(it) }
+    // Set access token when screen loads
+    LaunchedEffect(accessToken) {
+        accessToken?.let { petViewModel.setAccessToken(it) }
+    }
+
+    LaunchedEffect(currentUser) {
+        currentUser?.let { petViewModel.loadPets(it) }
     }
 
     val pets by petViewModel.pets.collectAsState()

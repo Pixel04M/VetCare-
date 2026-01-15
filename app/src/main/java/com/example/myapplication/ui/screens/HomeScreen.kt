@@ -17,9 +17,8 @@ import com.example.myapplication.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
-    val authViewModel: AuthViewModel = viewModel()
-    val currentUser = authViewModel.currentUser.collectAsState()
+fun HomeScreen(navController: NavController, authViewModel: AuthViewModel) {
+    val currentUser by authViewModel.currentUser.collectAsState()
 
     var showMenu by remember { mutableStateOf(false) }
 

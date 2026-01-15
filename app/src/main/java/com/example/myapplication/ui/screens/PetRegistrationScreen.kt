@@ -12,19 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,7 +33,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PetRegistrationScreen(navController: NavController) {
+fun PetRegistrationScreen(navController: NavController, authViewModel: AuthViewModel) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val petViewModel: PetViewModel = viewModel(
@@ -51,8 +41,14 @@ fun PetRegistrationScreen(navController: NavController) {
             context.applicationContext as Application
         )
     )
-    val authViewModel = remember { AuthViewModel() }
-    val currentUser = authViewModel.currentUser.collectAsState()
+    val currentUser by authViewModel.currentUser.collectAsState()
+    val accessToken by authViewModel.accessToken.collectAsState()
+    val petError by petViewModel.error.collectAsState()
+
+    // Set access token when screen loads
+    LaunchedEffect(accessToken) {
+        accessToken?.let { petViewModel.setAccessToken(it) }
+    }
 
     var petName by remember { mutableStateOf("") }
     var breed by remember { mutableStateOf("") }
@@ -60,6 +56,8 @@ fun PetRegistrationScreen(navController: NavController) {
     var medicalHistory by remember { mutableStateOf("") }
     var species by remember { mutableStateOf("Dog") }
     var isSaving by remember { mutableStateOf(false) }
+    var showError by remember { mutableStateOf(false) }
+    var showSuccess by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -153,8 +151,10 @@ fun PetRegistrationScreen(navController: NavController) {
 
             Button(
                 onClick = {
-                    if (petName.isNotBlank() && breed.isNotBlank() && age.isNotBlank()) {
+                    if (petName.isNotBlank() && breed.isNotBlank() && age.isNotBlank() && currentUser != null) {
                         isSaving = true
+                        showError = false
+                        showSuccess = false
                         val pet = Pet(
                             name = petName,
                             breed = breed,
@@ -163,13 +163,21 @@ fun PetRegistrationScreen(navController: NavController) {
                             species = species
                         )
                         scope.launch {
-                            petViewModel.addPet(currentUser.value ?: "", pet)
-                            navController.popBackStack()
+                            val success = petViewModel.addPet(currentUser!!, pet)
+                            isSaving = false
+                            if (success) {
+                                showSuccess = true
+                                // Wait a bit then navigate back
+                                kotlinx.coroutines.delay(1000)
+                                navController.popBackStack()
+                            } else {
+                                showError = true
+                            }
                         }
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isSaving && petName.isNotBlank() && breed.isNotBlank() && age.isNotBlank()
+                enabled = !isSaving && petName.isNotBlank() && breed.isNotBlank() && age.isNotBlank() && currentUser != null
             ) {
                 if (isSaving) {
                     CircularProgressIndicator(modifier = Modifier.size(20.dp))
@@ -177,6 +185,40 @@ fun PetRegistrationScreen(navController: NavController) {
                     Text("Save Pet")
                 }
             }
+        }
+
+        // Show error dialog
+        if (showError && petError != null) {
+            AlertDialog(
+                onDismissRequest = { 
+                    showError = false
+                    petViewModel.clearError()
+                },
+                title = { Text("Error") },
+                text = { Text(petError ?: "Failed to register pet") },
+                confirmButton = {
+                    TextButton(onClick = { 
+                        showError = false
+                        petViewModel.clearError()
+                    }) {
+                        Text("OK")
+                    }
+                }
+            )
+        }
+
+        // Show success dialog
+        if (showSuccess) {
+            AlertDialog(
+                onDismissRequest = { showSuccess = false },
+                title = { Text("Success") },
+                text = { Text("Pet registered successfully!") },
+                confirmButton = {
+                    TextButton(onClick = { showSuccess = false }) {
+                        Text("OK")
+                    }
+                }
+            )
         }
     }
 }

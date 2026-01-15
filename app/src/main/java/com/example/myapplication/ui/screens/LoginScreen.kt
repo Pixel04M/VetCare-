@@ -12,8 +12,7 @@ import androidx.navigation.NavController
 import com.example.myapplication.viewmodel.AuthViewModel
 
 @Composable
-fun LoginScreen(navController: NavController) {
-    val authViewModel: AuthViewModel = viewModel()
+fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
     val error by authViewModel.error.collectAsState()
     val isLoading by authViewModel.isLoading.collectAsState()

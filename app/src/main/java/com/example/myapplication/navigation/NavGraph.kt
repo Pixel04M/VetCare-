@@ -1,10 +1,12 @@
 package com.example.myapplication.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.myapplication.ui.screens.*
+import com.example.myapplication.viewmodel.AuthViewModel
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
@@ -22,24 +24,27 @@ sealed class Screen(val route: String) {
 
 @Composable
 fun NavGraph(navController: NavHostController) {
+    // Create a single instance of AuthViewModel to be shared
+    val authViewModel: AuthViewModel = viewModel()
+
     NavHost(
         navController = navController,
         startDestination = Screen.Login.route
     ) {
         composable(Screen.Login.route) {
-            LoginScreen(navController = navController)
+            LoginScreen(navController = navController, authViewModel = authViewModel)
         }
         composable(Screen.Register.route) {
-            RegisterScreen(navController = navController)
+            RegisterScreen(navController = navController, authViewModel = authViewModel)
         }
         composable(Screen.Home.route) {
-            HomeScreen(navController = navController)
+            HomeScreen(navController = navController, authViewModel = authViewModel)
         }
         composable(Screen.PetRegistration.route) {
-            PetRegistrationScreen(navController = navController)
+            PetRegistrationScreen(navController = navController, authViewModel = authViewModel)
         }
         composable(Screen.MyPets.route) {
-            MyPetsScreen(navController = navController)
+            MyPetsScreen(navController = navController, authViewModel = authViewModel)
         }
         composable(Screen.Consultations.route) {
             ConsultationsScreen(navController = navController)

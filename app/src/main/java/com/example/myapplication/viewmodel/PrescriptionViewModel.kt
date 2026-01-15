@@ -1,101 +1,110 @@
 package com.example.myapplication.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.OnlineVetHospitalApplication
 import com.example.myapplication.data.Medication
 import com.example.myapplication.data.Prescription
-import com.example.myapplication.data.database.PrescriptionEntity
+import com.example.myapplication.data.network.ApiService
+import com.example.myapplication.data.network.PrescriptionRequest
+import com.example.myapplication.data.network.PrescriptionResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-import org.json.JSONObject
-import java.util.UUID
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-class PrescriptionViewModel(application: Application) : AndroidViewModel(application) {
-    private val database = (application as OnlineVetHospitalApplication).database
-    private val prescriptionDao = database.prescriptionDao()
-
+class PrescriptionViewModel : ViewModel() {
     private val _prescriptions = MutableStateFlow<List<Prescription>>(emptyList())
     val prescriptions: StateFlow<List<Prescription>> = _prescriptions.asStateFlow()
 
-    fun loadPrescriptions(petId: String) {
+    private val supabaseAnonKey = "sb_publishable_dluFHcAJR-LfwJDNT0FICA_Ni3QGk0s"
+
+    private val client = OkHttpClient.Builder()
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .addHeader("apikey", supabaseAnonKey)
+                .addHeader("Authorization", "Bearer $supabaseAnonKey")
+                .addHeader("Content-Type", "application/json")
+                .build()
+            chain.proceed(request)
+        }
+        .build()
+
+    private val retrofit = Retrofit.Builder()
+        .baseUrl("https://pmllnpycgoaerizzpjzt.supabase.co/")
+        .client(client)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    private val apiService = retrofit.create(ApiService::class.java)
+
+    fun loadPrescriptions(userId: String) {
         viewModelScope.launch {
-            prescriptionDao.getPrescriptionsByPetId(petId).collect { entities ->
-                _prescriptions.value = entities.map { it.toPrescription() }
-            }
+            try {
+                val response = apiService.getPrescriptions(userId = "eq.$userId")
+                if (response.isSuccessful) {
+                    _prescriptions.value = response.body()?.map { it.toPrescription() } ?: emptyList()
+                }
+            } catch (e: Exception) {}
         }
     }
 
     suspend fun addPrescription(
-        consultationId: String,
+        userId: String,
         petId: String,
+        consultationId: String?,
         medications: List<Medication>,
         instructions: String
     ): Boolean {
         return try {
-            val prescriptionId = UUID.randomUUID().toString()
-            val medicationsJson = medicationsToJson(medications)
-            val entity = PrescriptionEntity(
-                id = prescriptionId,
-                consultationId = consultationId,
-                petId = petId,
-                vetId = "vet_001",
-                vetName = "Dr. Sarah Johnson",
-                medicationsJson = medicationsJson,
-                instructions = instructions,
-                date = System.currentTimeMillis(),
-                isDelivered = false
-            )
-            prescriptionDao.insertPrescription(entity)
-            true
-        } catch (e: Exception) {
-            false
-        }
-    }
-
-    private fun medicationsToJson(medications: List<Medication>): String {
-        val jsonArray = JSONArray()
-        medications.forEach { med ->
-            val jsonObject = JSONObject()
-            jsonObject.put("name", med.name)
-            jsonObject.put("dosage", med.dosage)
-            jsonObject.put("frequency", med.frequency)
-            jsonObject.put("duration", med.duration)
-            jsonArray.put(jsonObject)
-        }
-        return jsonArray.toString()
-    }
-
-    private fun jsonToMedications(json: String): List<Medication> {
-        val medications = mutableListOf<Medication>()
-        val jsonArray = JSONArray(json)
-        for (i in 0 until jsonArray.length()) {
-            val obj = jsonArray.getJSONObject(i)
-            medications.add(
-                Medication(
-                    name = obj.getString("name"),
-                    dosage = obj.getString("dosage"),
-                    frequency = obj.getString("frequency"),
-                    duration = obj.getString("duration")
+            val medList = medications.map {
+                mapOf(
+                    "name" to it.name,
+                    "dosage" to it.dosage,
+                    "frequency" to it.frequency,
+                    "duration" to it.duration
                 )
+            }
+            val request = PrescriptionRequest(
+                userId = userId,
+                petId = petId,
+                consultationId = consultationId,
+                medications = medList,
+                instructions = instructions
             )
-        }
-        return medications
+            val response = apiService.addPrescription(request)
+            if (response.isSuccessful) {
+                loadPrescriptions(userId)
+                true
+            } else false
+        } catch (e: Exception) { false }
     }
 
-    private fun PrescriptionEntity.toPrescription() = Prescription(
-        id = id,
-        consultationId = consultationId,
-        petId = petId,
-        vetId = vetId,
-        vetName = vetName,
-        medications = jsonToMedications(medicationsJson),
-        instructions = instructions,
-        date = date,
-        isDelivered = isDelivered
-    )
+    private fun PrescriptionResponse.toPrescription(): Prescription {
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        val date = try { sdf.parse(createdAt)?.time ?: 0L } catch (e: Exception) { 0L }
+
+        return Prescription(
+            id = id,
+            consultationId = consultationId ?: "",
+            petId = petId,
+            vetId = "vet_001",
+            vetName = "Dr. Sarah Johnson",
+            medications = medications.map {
+                Medication(
+                    name = it["name"] ?: "",
+                    dosage = it["dosage"] ?: "",
+                    frequency = it["frequency"] ?: "",
+                    duration = it["duration"] ?: ""
+                )
+            },
+            instructions = instructions,
+            date = date,
+            isDelivered = false
+        )
+    }
 }
