@@ -9,12 +9,12 @@ A comprehensive mobile application that enables pet owners to register their ani
    - User registration and login ✅
 
    - Secure user session management 
-### Available SOON 
+
 2. **Pet Registration** ✅
    - Register pets with photos, breed, age, and medical history
    - Support for multiple pets per user
    - View and manage registered pets
-
+### Available SOON 
 3. **Online Consultations** ❌
    - 24/7 text chat with certified veterinary doctors
    - Video call consultations
