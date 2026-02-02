@@ -25,6 +25,9 @@ class AuthViewModel : ViewModel() {
     private val _accessToken = MutableStateFlow<String?>(null)
     val accessToken: StateFlow<String?> = _accessToken.asStateFlow()
 
+    private val _userRole = MutableStateFlow<String?>(null)
+    val userRole: StateFlow<String?> = _userRole.asStateFlow()
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
@@ -67,6 +70,7 @@ class AuthViewModel : ViewModel() {
                         _isLoggedIn.value = true
                         _currentUser.value = body.user?.id ?: email
                         _accessToken.value = body.access_token
+                        _userRole.value = (body.user?.user_metadata?.get("role") as? String) ?: "customer"
                     }
                 } else {
                     val errorBody = response.errorBody()?.string()
@@ -80,13 +84,13 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun register(name: String, email: String, password: String, phone: String) {
+    fun register(name: String, email: String, password: String, phone: String, role: String) {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
             _registrationSuccess.value = false
             try {
-                val request = RegisterRequest(email, password, mapOf("name" to name, "phone" to phone))
+                val request = RegisterRequest(email, password, mapOf("name" to name, "phone" to phone, "role" to role))
                 val response = apiService.register(request)
                 if (response.isSuccessful) {
                     _registrationSuccess.value = true
@@ -130,6 +134,7 @@ class AuthViewModel : ViewModel() {
         _isLoggedIn.value = false
         _currentUser.value = null
         _accessToken.value = null
+        _userRole.value = null
     }
 
     fun clearError() { _error.value = null }

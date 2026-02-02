@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConsultationsScreen(navController: NavController) {
+fun ConsultationsScreen(navController: NavController, authViewModel: AuthViewModel) {
     val context = LocalContext.current
     val consultationViewModel: ConsultationViewModel = viewModel(
         factory = androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.getInstance(
@@ -37,11 +37,18 @@ fun ConsultationsScreen(navController: NavController) {
             context.applicationContext as Application
         )
     )
-    val authViewModel = remember { AuthViewModel() }
-    val currentUser = authViewModel.currentUser.collectAsState()
+    val currentUser by authViewModel.currentUser.collectAsState()
+    val accessToken by authViewModel.accessToken.collectAsState()
 
-    LaunchedEffect(currentUser.value) {
-        currentUser.value?.let { consultationViewModel.loadConsultations(it) }
+    LaunchedEffect(accessToken) {
+        accessToken?.let {
+            consultationViewModel.setAccessToken(it)
+            petViewModel.setAccessToken(it)
+        }
+    }
+
+    LaunchedEffect(currentUser) {
+        currentUser?.let { consultationViewModel.loadConsultations(it) }
     }
 
     val consultations by consultationViewModel.consultations.collectAsState()
@@ -51,8 +58,8 @@ fun ConsultationsScreen(navController: NavController) {
     var selectedType by remember { mutableStateOf<ConsultationType?>(null) }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(currentUser.value) {
-        currentUser.value?.let { petViewModel.loadPets(it) }
+    LaunchedEffect(currentUser) {
+        currentUser?.let { petViewModel.loadPets(it) }
     }
 
     Scaffold(
@@ -202,7 +209,7 @@ fun ConsultationsScreen(navController: NavController) {
     LaunchedEffect(selectedType) {
         selectedType?.let { type ->
             selectedPetId?.let { petId ->
-                currentUser.value?.let { userId ->
+                currentUser?.let { userId ->
                     scope.launch {
                         consultationViewModel.startConsultation(userId, petId, type)
                     }

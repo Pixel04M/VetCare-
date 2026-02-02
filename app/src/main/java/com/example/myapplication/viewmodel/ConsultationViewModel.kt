@@ -24,24 +24,37 @@ class ConsultationViewModel : ViewModel() {
 
     private val supabaseAnonKey = "sb_publishable_dluFHcAJR-LfwJDNT0FICA_Ni3QGk0s"
 
-    private val client = OkHttpClient.Builder()
-        .addInterceptor { chain ->
-            val request = chain.request().newBuilder()
-                .addHeader("apikey", supabaseAnonKey)
-                .addHeader("Authorization", "Bearer $supabaseAnonKey")
-                .addHeader("Content-Type", "application/json")
-                .build()
-            chain.proceed(request)
-        }
-        .build()
+    private var accessToken: String? = null
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://pmllnpycgoaerizzpjzt.supabase.co/")
-        .client(client)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    private fun createClient(token: String?): OkHttpClient {
+        val authToken = token ?: supabaseAnonKey
+        return OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .addHeader("apikey", supabaseAnonKey)
+                    .addHeader("Authorization", "Bearer $authToken")
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("Prefer", "return=representation")
+                    .build()
+                chain.proceed(request)
+            }
+            .build()
+    }
 
-    private val apiService = retrofit.create(ApiService::class.java)
+    private fun getRetrofit(token: String?): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("https://pmllnpycgoaerizzpjzt.supabase.co/")
+            .client(createClient(token))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    fun setAccessToken(token: String?) {
+        accessToken = token
+    }
+
+    private val apiService: ApiService
+        get() = getRetrofit(accessToken).create(ApiService::class.java)
 
     fun loadConsultations(userId: String) {
         viewModelScope.launch {

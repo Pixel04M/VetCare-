@@ -16,15 +16,15 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
     val error by authViewModel.error.collectAsState()
     val isLoading by authViewModel.isLoading.collectAsState()
+    val userRole by authViewModel.userRole.collectAsState()
     
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {
-            navController.navigate("home") {
-                popUpTo("login") { inclusive = true }
-            }
+            val destination = if (userRole == "veterinarian") "vet_home" else "home"
+            navController.navigate(destination) { popUpTo("login") { inclusive = true } }
         }
     }
 

@@ -38,6 +38,7 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
     var email by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var role by remember { mutableStateOf("customer") }
 
     // Navigate to home if already logged in
     LaunchedEffect(isLoggedIn) {
@@ -186,6 +187,27 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
                         )
                     )
 
+                    Column {
+                        Text(
+                            text = "Account Type",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = DarkGray
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            FilterChip(
+                                selected = role == "customer",
+                                onClick = { role = "customer" },
+                                label = { Text("Customer") }
+                            )
+                            FilterChip(
+                                selected = role == "veterinarian",
+                                onClick = { role = "veterinarian" },
+                                label = { Text("Veterinarian") }
+                            )
+                        }
+                    }
+
                     error?.let {
                         Text(
                             text = it,
@@ -199,7 +221,7 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
 
                     Button(
                         onClick = {
-                            authViewModel.register(name, email, password, phone)
+                            authViewModel.register(name, email, password, phone, role)
                         },
                         modifier = Modifier
                             .fillMaxWidth()

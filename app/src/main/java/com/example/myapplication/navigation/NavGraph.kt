@@ -12,6 +12,7 @@ sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Register : Screen("register")
     object Home : Screen("home")
+    object VetHome : Screen("vet_home")
     object PetRegistration : Screen("pet_registration")
     object MyPets : Screen("my_pets")
     object Consultations : Screen("consultations")
@@ -40,6 +41,9 @@ fun NavGraph(navController: NavHostController) {
         composable(Screen.Home.route) {
             HomeScreen(navController = navController, authViewModel = authViewModel)
         }
+        composable(Screen.VetHome.route) {
+            HomeScreen(navController = navController, authViewModel = authViewModel)
+        }
         composable(Screen.PetRegistration.route) {
             PetRegistrationScreen(navController = navController, authViewModel = authViewModel)
         }
@@ -47,7 +51,11 @@ fun NavGraph(navController: NavHostController) {
             MyPetsScreen(navController = navController, authViewModel = authViewModel)
         }
         composable(Screen.Consultations.route) {
-            ConsultationsScreen(navController = navController)
+            ConsultationsScreen(navController = navController, authViewModel = authViewModel)
+        }
+        composable(Screen.ConsultationDetail.route) { backStackEntry ->
+            val consultationId = backStackEntry.arguments?.getString("consultationId") ?: ""
+            ConsultationDetailScreen(navController = navController, consultationId = consultationId, authViewModel = authViewModel)
         }
         composable(Screen.NearbyVets.route) {
             NearbyVetsScreen(navController = navController)

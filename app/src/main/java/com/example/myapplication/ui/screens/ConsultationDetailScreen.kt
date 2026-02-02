@@ -20,10 +20,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myapplication.ui.theme.*
+import com.example.myapplication.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConsultationDetailScreen(navController: NavController, consultationId: String) {
+fun ConsultationDetailScreen(navController: NavController, consultationId: String, authViewModel: AuthViewModel) {
     var messageText by remember { mutableStateOf("") }
     
     Scaffold(
